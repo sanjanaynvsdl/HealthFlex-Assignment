@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { addReply, saveCommentsToStorage } from '../redux/commentsSlice';
 import { validateComment } from '../utils/validation';
 
 const ReplyForm = ({ commentId }) => {
+  const [name, setName] = useState('');
   const [text, setText] = useState('');
   const dispatch = useDispatch();
   const comments = useSelector(state => state.comments.comments);
 
   const handleSubmit = () => {
-    if (validateComment(text)) {
+    if (validateComment(name) && validateComment(text)) {
       const newReply = {
         id: Date.now().toString(),
+        name,
         text,
         date: new Date().toISOString(),
       };
@@ -23,6 +25,7 @@ const ReplyForm = ({ commentId }) => {
           : c
       );
       dispatch(saveCommentsToStorage(updatedComments));
+      setName('');
       setText('');
     }
   };
@@ -31,12 +34,20 @@ const ReplyForm = ({ commentId }) => {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
+        value={name}
+        onChangeText={setName}
+        placeholder="Your name"
+      />
+      <TextInput
+        style={styles.input}
         value={text}
         onChangeText={setText}
         placeholder="Add a reply..."
         multiline
       />
-      <Button title="Reply" onPress={handleSubmit} />
+      <TouchableOpacity style={styles.replyButton} onPress={handleSubmit}>
+        <Text style={styles.replyButtonText}>Reply</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -51,6 +62,15 @@ const styles = StyleSheet.create({
     padding: 5,
     marginBottom: 5,
     borderRadius: 3,
+  },
+  replyButton: {
+    backgroundColor: '#2196F3',
+    padding: 5,
+    borderRadius: 3,
+    alignItems: 'center',
+  },
+  replyButtonText: {
+    color: 'white',
   },
 });
 

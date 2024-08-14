@@ -1,24 +1,22 @@
+
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet } from 'react-native';
+import { View, TextInput, TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { addComment, saveCommentsToStorage } from '../redux/commentsSlice';
 import { validateComment } from '../utils/validation';
 
 const CommentForm = () => {
+  const [name, setName] = useState('');
   const [text, setText] = useState('');
   const dispatch = useDispatch();
   const comments = useSelector(state => state.comments.comments);
 
   const handleSubmit = () => {
-    if (validateComment(text)) {
-      const newComment = {
-        id: Date.now().toString(),
-        text,
-        date: new Date().toISOString(),
-        replies: [],
-      };
+    if (validateComment(name) && validateComment(text)) {
+      const newComment = { name, text };
       dispatch(addComment(newComment));
       dispatch(saveCommentsToStorage([...comments, newComment]));
+      setName('');
       setText('');
     }
   };
@@ -27,12 +25,20 @@ const CommentForm = () => {
     <View style={styles.container}>
       <TextInput
         style={styles.input}
+        value={name}
+        onChangeText={setName}
+        placeholder="Your name"
+      />
+      <TextInput
+        style={styles.input}
         value={text}
         onChangeText={setText}
         placeholder="Add a comment..."
         multiline
       />
-      <Button title="Submit" onPress={handleSubmit} />
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+        <Text style={styles.submitButtonText}>SUBMIT</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -47,6 +53,16 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     borderRadius: 5,
+  },
+  submitButton: {
+    backgroundColor: '#2196F3',
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  submitButtonText: {
+    color: 'white',
+    fontWeight: 'bold',
   },
 });
 
