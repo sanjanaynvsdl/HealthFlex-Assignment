@@ -1,5 +1,7 @@
 # Comments-App
 ## About the app
+built this using react-native!
+
 The Comments App is designed to manage and interact with user comments and replies efficiently. Key features include:
 
 - Validation: Ensures that both name and comment text are entered before submission.
